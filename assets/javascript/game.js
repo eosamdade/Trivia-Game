@@ -79,7 +79,7 @@ $(document).ready(function(){
             unaswered ++;
             stop();
 
-            $("answerdblock").html("<p>TIMER IS UP! The correct ans is" + drumroll + "</p>");
+            $("#answerBlock").html("<p>TIMER IS UP! The correct ans is" + drumroll + "</p>");
             hidepicture();
         };
         
@@ -94,23 +94,83 @@ $(document).ready(function(){
         clearInterval(intervalId)
     }
 
+    //display questions
+    function displayQuestion () {
+        index = Math.floor(Math.random()*options.length);
+        pick = option[index];
 
+        // console.log(pick);
 
+        $("#questionBlock").html("<h2>" + pick.question + "</h2>");
 
+        //iterate ans and display
 
+        for (var i =0; i < pick.choice.length; i ++ ){
+            var userChoice = $("div");
+            userChoice.class("answer choice");
+            unaswered.html(pick.choice [i]);
+            userChoice.attr("dataGuessValue",[i]);
+            $("#answerBlock").append(userChoice)
+        }
+    };
+
+    //click function to selcet ans and outcome
+    $(".answerChoice").on("click",function(){
+        userGuess =parseInt($(this).attr("dataGuessValue"));
+
+        //correct guess or wrong guesses outcome
+        if (userGuess === pick.answer) {
+            stop();
+            correct++;
+            userGuess="";
+            $("#answerBlock").html("<p>CORRECT!</p>");
+            hidepicture();
+        }
+        else{
+            stop();
+            wrong++;
+            userGuess="";
+            $("#answerBlock").html("<p>WRONG! The correct answer is " +pick.choice[pick.answer] + "</p>");
+            hidepicture();
+        }
+    })   
     
+    function hidepicture () {
+        $("#answerBlock").append("<img src =" + pick.photo + ">");
+        newArray.push(pick);
+        option.splice(index,1);
 
+        var hidepic = setTimeout(function(){
+            $("#answerBlock").empty();
+            timer = 20;
+        })
 
+        //score screen
 
-
-
-
-
-
-
-
-
-
-
-
+        if ((wrong + correct + unaswered) === questionCount) {
+            $("questionBlock").html("<h3> GAME OVER! HERE IS HOW YOU DID : </h3>");
+            $("#answerBlock"),append("<h4> CORRECT : " + correct + "</h4>");
+            $("#answerBlock"),append("<h4> WRONG : " + wrong + "</h4>");
+            $("#answerBlock"),append("<h4> UNANSWERED : " + unaswered + "</h4>");
+            $("#reset").show();
+            correct = 0;
+            wrong = 0;
+            unaswered = 0;
+        }
+        else{
+            runTimer();
+            displayQuestion();
+        }
+    }
+    
+    $("#reset").on("click", function(){
+        $("#reset").hide();
+        $("#answerBlock").empty();
+        for ( var i = 0; i < holder.length; i++){
+            options.push(holder[i]);
+        }
+        runTimer();
+        displayQuestion();
+    })
+    
 })
